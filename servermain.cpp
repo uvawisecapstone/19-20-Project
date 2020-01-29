@@ -1,9 +1,10 @@
-
 #include <iostream> //handles debug input/output
 
-#include <sys/types.h>
+#include <sys/types.h> //needed for creating sockets
 
-#include <sys/socket.h>
+#include <sys/socket.h> //needed for creating sockets
+
+#include <unistd.h> //defines miscellaneous constants and types
 
 #include <netdb.h> //Allows for network database operations
 
@@ -24,42 +25,50 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 	//initialize the socket
     int listeningSocket = socket(AF_INET, SOCK_STREAM, 0);
     
+    if(listeningSocket == -1){
+		std::cerr << "Unable to create a socket...server shutting down." 
+														<< std::endl;
+	}
+    
     //bind the socket to an IP address and PORT number
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(PORT);
     inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
+    
     bind(listeningSocket, (sockaddr*)&hint, sizeof(hint));
     
-    listen(listeningSocket, SOMAXCONN);
+    //continuously listen for and accept connections
+	while(true){
+		//listen for connections
+		listen(listeningSocket, SOMAXCONN);
     
-    std::cout << "Listening on port: " << PORT << std::endl;
+		std::cout << "Listening on port: " << PORT << std::endl;
     
-    //accept clients
-	sockaddr_in client;
-	socklen_t clientSize = sizeof(client);
-	char host[NI_MAXHOST];
-	char service[NI_MAXSERV];
+		//accept clients
+		sockaddr_in client;
+		socklen_t clientSize = sizeof(client);
+		char host[NI_MAXHOST];		//Client's remote name
+		char service[NI_MAXSERV];	//Port the client is listening on
 	
-	accept(listeningSocket, (sockaddr*)&client, &clientSize);
+		accept(listeningSocket, (sockaddr*)&client, &clientSize);
 														
-	memset(host, 0, NI_MAXHOST);
-	memset(service, 0, NI_MAXSERV);
+		memset(host, 0, NI_MAXHOST);
+		memset(service, 0, NI_MAXSERV);
 	
-	int result = getnameinfo((sockaddr*)&client, sizeof(client), host,
-									NI_MAXHOST, service, NI_MAXSERV, 0);
-	
-	std::cout << result << std::endl;
-													
-	if(result){	
-		std::cout << host << " connected on " << service << std::endl;
+		if(getnameinfo((sockaddr*)&client, sizeof(client), 
+						host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0){
+			std::cout << host << " connected on port: " << service << 
+											std::endl << std::endl;
+		}
+		else{
+			inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
+			std::cout << host << " connected on port:" << 
+												ntohs(client.sin_port) 
+			<< std::endl << std::endl;
+		}
 	}
-	else{
-		inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-		std::cout << host << "connected on " << ntohs(client.sin_port) 
-		<< std::endl;
-	}
-	
 //end code block
+
     return 0;
 }
