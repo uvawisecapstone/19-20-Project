@@ -1,9 +1,9 @@
 
 #include <iostream> //handles debug input/output
 
-//#include <sys/types.h>
+#include <sys/types.h>
 
-//#include <sys/socket.h>
+#include <sys/socket.h>
 
 #include <netdb.h> //Allows for network database operations
 
@@ -20,6 +20,7 @@ It has been modified to fit the needs of this project
 Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 6acaddfaf
 */
+//Begin code block
 	//initialize the socket
     int listeningSocket = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -58,5 +59,7 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 		std::cout << host << "connected on " << ntohs(client.sin_port) 
 		<< std::endl;
 	}
+	
+//end code block
     return 0;
 }
