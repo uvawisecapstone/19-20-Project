@@ -1,12 +1,13 @@
+
 #include <iostream> //handles debug input/output
 
-#include <sys/types.h>
+//#include <sys/types.h>
 
-#include <sys/socket.h>
+//#include <sys/socket.h>
 
-#include <netdb.h>
+#include <netdb.h> //Allows for network database operations
 
-#include <arpa/inet.h>
+#include <arpa/inet.h> //Allows for internet operations
 
 #include <string.h> //Allows for easier manipulation of character arrays
 
@@ -48,9 +49,7 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 									NI_MAXHOST, service, NI_MAXSERV, 0);
 	
 	std::cout << result << std::endl;
-					
-				
-								
+													
 	if(result){	
 		std::cout << host << " connected on " << service << std::endl;
 	}
@@ -59,6 +58,5 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 		std::cout << host << "connected on " << ntohs(client.sin_port) 
 		<< std::endl;
 	}
-//**********************************************************************
     return 0;
 }
