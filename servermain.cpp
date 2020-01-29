@@ -36,12 +36,18 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
     hint.sin_port = htons(PORT);
     inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
     
-    bind(listeningSocket, (sockaddr*)&hint, sizeof(hint));
+    if(bind(listeningSocket, (sockaddr*)&hint, sizeof(hint)) == -1){
+		std::cerr << "Unable to bind to the IP address or port number." 
+														<< std::endl;
+	}
     
     //continuously listen for and accept connections
 	while(true){
 		//listen for connections
-		listen(listeningSocket, SOMAXCONN);
+		if(listen(listeningSocket, SOMAXCONN) == -1){
+			std::cerr << "Unable to listen for connections." 
+														<< std::endl;
+		}
     
 		std::cout << "Listening on port: " << PORT << std::endl;
     
@@ -51,13 +57,16 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 		char host[NI_MAXHOST];		//Client's remote name
 		char service[NI_MAXSERV];	//Port the client is listening on
 	
-		accept(listeningSocket, (sockaddr*)&client, &clientSize);
+		if(accept(listeningSocket, (sockaddr*)&client, &clientSize) 
+																== -1){
+			std::cerr << "Unable to connect the client" << std::endl;
+		}
 														
 		memset(host, 0, NI_MAXHOST);
 		memset(service, 0, NI_MAXSERV);
 	
-		if(getnameinfo((sockaddr*)&client, sizeof(client), 
-						host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0){
+		if(getnameinfo((sockaddr*)&client, sizeof(client), host, 
+							NI_MAXHOST, service, NI_MAXSERV, 0) == 0){
 			std::cout << host << " connected on port: " << service << 
 											std::endl << std::endl;
 		}
