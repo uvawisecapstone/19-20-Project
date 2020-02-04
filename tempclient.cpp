@@ -34,7 +34,10 @@ int main()
    }
    
    // Fill in a hint structure
-   
+   // Hints are pointers defined by <netdb.h>
+   // The structure can be used to provide hints concerning the type of socket
+   // that the caller supports or wishes to use
+    
    sockaddr_in hint;
    hint.sin_family = AF_INET;
    hint.sin_port = htons(PORT);
