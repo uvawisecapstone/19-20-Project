@@ -31,6 +31,10 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 	}
     
     //bind the socket to an IP address and PORT number
+   // Hints are pointers defined by <netdb.h> 	
+   // The structure can be used to provide hints concerning the type of socket
+   // that the caller supports or wishes to use
+	
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(PORT);
