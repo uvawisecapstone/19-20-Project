@@ -41,43 +41,75 @@ Link to code: https://gist.github.com/codehoose/020c6213f481aee76ea9b09
 														<< std::endl;
 	}
     
-    //continuously listen for and accept connections
-	while(true){
-		//listen for connections
-		if(listen(listeningSocket, SOMAXCONN) == -1){
-			std::cerr << "Unable to listen for connections." 
-														<< std::endl;
-		}
-    
-		std::cout << "Listening on port: " << PORT << std::endl;
-    
-		//accept clients
-		sockaddr_in client;
-		socklen_t clientSize = sizeof(client);
-		char host[NI_MAXHOST];		//Client's remote name
-		char service[NI_MAXSERV];	//Port the client is listening on
-	
-		if(accept(listeningSocket, (sockaddr*)&client, &clientSize) 
-																== -1){
-			std::cerr << "Unable to connect the client" << std::endl;
-		}
-														
-		memset(host, 0, NI_MAXHOST);
-		memset(service, 0, NI_MAXSERV);
-	
-		if(getnameinfo((sockaddr*)&client, sizeof(client), host, 
-							NI_MAXHOST, service, NI_MAXSERV, 0) == 0){
-			std::cout << host << " connected on port: " << service << 
-											std::endl << std::endl;
-		}
-		else{
-			inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-			std::cout << host << " connected on port:" << 
-												ntohs(client.sin_port) 
-			<< std::endl << std::endl;
-		}
+	//listen for connections
+	if(listen(listeningSocket, SOMAXCONN) == -1){
+		std::cerr << "Unable to listen for connections." << std::endl;
 	}
-//end code block
+    
+	std::cout << "Listening on port: " << PORT << std::endl;
+    
+	//accept clients
+	sockaddr_in client;
+	socklen_t clientSize = sizeof(client);
+	char host[NI_MAXHOST];		//Client's remote name
+	char service[NI_MAXSERV];	//Port the client is listening on
+	
+	int clientSocket = accept(listeningSocket, (sockaddr*)&client,
+														&clientSize);
+	if(clientSocket == -1) 
+	{
+		std::cerr << "Unable to connect the client" << std::endl;
+	}
+														
+	memset(host, 0, NI_MAXHOST);
+	memset(service, 0, NI_MAXSERV);
+	
+	if(getnameinfo((sockaddr*)&client, sizeof(client), host, 
+							NI_MAXHOST, service, NI_MAXSERV, 0) == 0){
+		std::cout << host << " connected on port: " << service << 
+											std::endl << std::endl;
+	}
+	else{
+		inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
+		std::cout << host << " connected on port:" << 
+												ntohs(client.sin_port) 
+		<< std::endl << std::endl;
+	}
+	
+	close(listeningSocket);
+	
+	char buffer[4096];
+	
+	//Accepts and echos a message back to the client
+	while(true)
+	{
+		memset(buffer, 0, 4096);
+		
+		//Wait for the client to send data
+		int bytesReceived = recv(clientSocket, buffer, 4096, 0);
+		if(bytesReceived == -1)
+		{
+			std::cerr << "Error receiving data." << std::endl;
+			break;
+		}
+		
+		if(bytesReceived == 0)
+		{
+			std::cout << "Client disconnected." << std::endl;
+			break;
+		}
+		
+		//Prints the message sent by the client
+		std::cout << std::string(buffer, 0, bytesReceived) << std::endl;
+		
+		//Echo message back to the client
+		//This is to show that the client and server are communicating
+		send(clientSocket, buffer, bytesReceived + 1, 0);
+		
+	}
+	
+	close(clientSocket);
 
     return 0;
 }
+//end code block
