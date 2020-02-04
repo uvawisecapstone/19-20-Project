@@ -21,7 +21,7 @@ https://gist.github.com/codehoose/d7dea7010d041d52fb0f59cbe3826036
 
 const int PORT = 21600; // Listening port # on the server
 
-const std::string ipAddress = "0.0.0.0";   // IP Address of the server 
+const std::string IPADDRESS = "0.0.0.0";   // IP Address of the server 
 
 int main()
 {                 
@@ -38,7 +38,7 @@ int main()
    sockaddr_in hint;
    hint.sin_family = AF_INET;
    hint.sin_port = htons(PORT);
-   inet_pton(AF_INET, ipAddress.c_str(), &hint.sin_addr);
+   inet_pton(AF_INET, IPADDRESS.c_str(), &hint.sin_addr);
    
    // Connect to a server
    
