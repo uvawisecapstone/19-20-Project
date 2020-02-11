@@ -3,6 +3,8 @@
 #include "server_wss.hpp"
 #include <future>
 
+#include "requestProcessing.hpp"
+
 using namespace std;
 
 using WssServer = SimpleWeb::SocketServer<SimpleWeb::WSS>;
@@ -19,12 +21,8 @@ int main() {
 
     cout << "Server: Message received: \"" << out_message << "\" from " << connection.get() << endl;
 
-	if(out_message == "send_file"){
-		out_message = "Here is the file";
-	}
-	else{
-		out_message = "Invalid Request";
-	}
+
+	out_message = processRequest(out_message);
 	
 	cout << "Server: Sending message \"" << out_message << "\" to " << connection.get() << endl;
 
@@ -63,38 +61,7 @@ int main() {
          << "Error: " << ec << ", error message: " << ec.message() << endl;
   };
 
-  // Example 2: Echo thrice
-  // Demonstrating queuing of messages by sending a received message three times back to the client.
-  // Concurrent send operations are automatically queued by the library.
-  // Test with the following JavaScript:
-  //   var wss=new WebSocket("wss://localhost:8080/echo_thrice");
-  //   wss.onmessage=function(evt){console.log(evt.data);};
-  //   wss.send("test");
-  auto &echo_thrice = server.endpoint["^/echo_thrice/?$"];
-  echo_thrice.on_message = [](shared_ptr<WssServer::Connection> connection, shared_ptr<WssServer::InMessage> in_message) {
-    auto out_message = make_shared<string>(in_message->string());
-
-    connection->send(*out_message, [connection, out_message](const SimpleWeb::error_code &ec) {
-      if(!ec)
-        connection->send(*out_message); // Sent after the first send operation is finished
-    });
-    connection->send(*out_message); // Most likely queued. Sent after the first send operation is finished.
-  };
-
-  // Example 3: Echo to all WebSocket Secure endpoints
-  // Sending received messages to all connected clients
-  // Test with the following JavaScript on more than one browser windows:
-  //   var wss=new WebSocket("wss://localhost:8080/echo_all");
-  //   wss.onmessage=function(evt){console.log(evt.data);};
-  //   wss.send("test");
-  auto &echo_all = server.endpoint["^/echo_all/?$"];
-  echo_all.on_message = [&server](shared_ptr<WssServer::Connection> /*connection*/, shared_ptr<WssServer::InMessage> in_message) {
-    auto out_message = in_message->string();
-
-    // echo_all.get_connections() can also be used to solely receive connections on this endpoint
-    for(auto &a_connection : server.get_connections())
-      a_connection->send(out_message);
-  };
+  
 
   // Start server and receive assigned port when server is listening for requests
   promise<unsigned short> server_port;

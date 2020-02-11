@@ -30,10 +30,17 @@ int main() {
     cout << "Client: Opened connection" << endl;
     
     string out_message;
-	cout << "Enter message ('Close' to close connection): ";
+    cout << "Enter message ('Close' to close connection): ";
 	cin >> out_message;
-	cout << "Client: Sending message: \"" << out_message << "\"" << endl;
-	connection->send(out_message);
+	
+	if(out_message != "Close"){
+	  cout << "Client: Sending message: \"" << out_message << "\"" << endl;
+	  connection->send(out_message);
+    }
+    else{
+	  cout << "Client: Sending close connection" << endl;
+	  connection->send_close(1000);
+	}
   };
 
   client.on_close = [](shared_ptr<WssClient::Connection> connection, int status, const string & /*reason*/) {
