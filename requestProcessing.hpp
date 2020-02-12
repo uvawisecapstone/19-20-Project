@@ -23,7 +23,7 @@ std::string processRequest(std::string out_message){
 		
 		//generate account
 		case 1: {
-			std::string username = "";;
+			std::string username = "";
 			std::string password = "";
 			
 			
@@ -56,15 +56,15 @@ std::string processRequest(std::string out_message){
 		//set verification status
 		case 2: {
 			
-			std::string verificationNumber = ""
-			std::string verificationEmail = ""
+			std::string verificationNumber = "";
+			std::string verificationEmail = "";
 			escapeCharacterLocation = out_message.find("~");
 			
 			for(int i = 3; i < escapeCharacterLocation; i++){
 				verificationNumber += out_message[i];
 			}
 			for(int i = escapeCharacterLocation + 1; i < out_message.length(); i++){
-				verificationEmail += out_message[i]
+				verificationEmail += out_message[i];
 			}
 			
 			
@@ -77,7 +77,7 @@ std::string processRequest(std::string out_message){
 		
 		//check login
 		case 3: {
-			std::string username = "";;
+			std::string username = "";
 			std::string password = "";
 			
 			
