@@ -1,5 +1,4 @@
 #include <pthread.h>
-#include "client_wss.hpp"
 #include "server_wss.hpp"
 #include <future>
 
@@ -10,6 +9,9 @@ using namespace std;
 using WssServer = SimpleWeb::SocketServer<SimpleWeb::WSS>;
 
 int main() {
+	
+	//start database here
+	
   // WebSocket Secure (WSS)-server at port 8080 using 1 thread
   WssServer server("server.crt", "server.key");
   server.config.port = 8080;
